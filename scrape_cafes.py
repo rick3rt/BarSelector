@@ -38,6 +38,10 @@ def dump_search(filename, data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 
 
+# load the api key from a file
+with open("api_key.txt", "r") as file:
+    api_key = file.read().strip()
+
 # Set up the query parameters
 location = search_city("Delft")
 location_str = convert_location_to_str(location, 13)  # specify zoom level
@@ -48,7 +52,7 @@ params = {
     "google_domain": "google.nl",
     "num": "0",
     "start": "0",
-    "api_key": "1737ae2d13df43e9730a56fa6f200b7cb0e5502c9e2486a297b9f2d4054fe4d8",
+    "api_key": api_key,
 }
 
 
