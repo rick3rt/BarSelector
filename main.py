@@ -1,6 +1,6 @@
 import ctypes
 import os
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QCheckBox,
     QPushButton,
-    QMessageBox,
+    QShortcut,
     QLabel,
 )
 import pandas as pd
@@ -36,8 +36,7 @@ class BarSelectorGui(QMainWindow):
         app_font.setPointSize(10)
         self.setFont(app_font)
         QApplication.setFont(app_font)  # for any new popup window
-
-        QApplication.setStyle("Fusion")
+        # QApplication.setStyle("Fusion")
         self.setWindowTitle(self.name)
         self.default_size = (1400, 600)
         self.resize(self.default_size[0], self.default_size[1])
@@ -54,7 +53,6 @@ class BarSelectorGui(QMainWindow):
         self.menu.addMenu(self.file_menu)
         self.setMenuBar(self.menu)
 
-        # bar selection
         # input your address
         self.input_address = QLineEdit()
         self.input_address.setText("Klein Delfgauw 53, Delft")
@@ -89,13 +87,18 @@ class BarSelectorGui(QMainWindow):
 
         but_randomize = QPushButton("Randomize Bar!")
         but_randomize.clicked.connect(self.on_randomize)
+        # run function when enter pressed
+        self.randomize_action = QShortcut(QKeySequence("Return"), self)
+        self.randomize_action.activated.connect(self.on_randomize)
+        self.open_web_action = QShortcut(QKeySequence("w"), self)
+        self.open_web_action.activated.connect(self.on_website)
 
         self.bar_label = QLabel("Selected bar")
         self.bar_label.setMinimumSize(400, 100)
         self.bar_label.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
         # set a border around the label and set the background color
         self.bar_label.setStyleSheet(
-            "border: 1px solid black; background-color: white;"
+            "border: 1px solid black; background-color: white; font-size: 40px"
         )
 
         layout = QGridLayout()
@@ -105,8 +108,8 @@ class BarSelectorGui(QMainWindow):
         layout.addWidget(self.type_selector, 1, 0, 1, 3)
         layout.addWidget(self.bar_label, 2, 2, 2, 1)
         layout.addWidget(self.distance_selector, 2, 0, 1, 2)
-        layout.addWidget(but_randomize, 3, 0, 1, 1)
-        layout.addWidget(check_show_options, 3, 1, 1, 1)
+        layout.addWidget(but_randomize, 3, 1, 1, 1)
+        layout.addWidget(check_show_options, 3, 0, 1, 1)
         layout.addWidget(self.tableView, 4, 0, 1, 3)
 
         # add layout to main window
@@ -135,6 +138,11 @@ class BarSelectorGui(QMainWindow):
             #     url = bar["website"]
             #     os.system(f"start chrome {url}")
             self.bar_label.setText(bar["title"])
+
+    def on_website(self):
+        bar_name = self.bar_label.text()
+        url = self.bs.getWebsite(bar_name)
+        os.system(f"start chrome {url}")
 
     def on_show_options(self):
         self.tableView.setVisible(not self.tableView.isVisible())
