@@ -57,6 +57,7 @@ class BarSelectorGui(QMainWindow):
         self.input_address = QLineEdit()
         self.input_address.setText("Klein Delfgauw 53, Delft")
         self.input_address.returnPressed.connect(self.on_address_entered)
+        # self.input_address.textChanged.connect(self.on_address_entered)
 
         # type selection
         bar_types = self.bs.getTypes()
@@ -88,7 +89,7 @@ class BarSelectorGui(QMainWindow):
         but_randomize = QPushButton("Randomize Bar!")
         but_randomize.clicked.connect(self.on_randomize)
         # run function when enter pressed
-        self.randomize_action = QShortcut(QKeySequence("Return"), self)
+        self.randomize_action = QShortcut(QKeySequence("space"), self)
         self.randomize_action.activated.connect(self.on_randomize)
         self.open_web_action = QShortcut(QKeySequence("w"), self)
         self.open_web_action.activated.connect(self.on_website)
@@ -153,8 +154,9 @@ class BarSelectorGui(QMainWindow):
 
     def on_address_entered(self):
         address = self.input_address.text()
-        self.bs.computeDistance(address)
-        self.update_table()
+        if address:
+            self.bs.computeDistance(address)
+            self.update_table()
 
     def on_distance_changed(self):
         distance = self.distance_selector.getValue()
